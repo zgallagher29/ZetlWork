@@ -1,11 +1,17 @@
-## source link: https://developers.google.com/drive/api/v3/integrate-open#open_and_convert_google_docs_in_your_app
+from __future__ import print_function
 
-file_id = '1ZdR3L3qP4Bkq8noWLJHSr_iBau0DNT4Kli4SxNc2YEo'
-request = drive_service.files().export_media(fileId=file_id,
-                                             mimeType='application/pdf')
-fh = io.BytesIO()
-downloader = MediaIoBaseDownload(fh, request)
-done = False
-while done is False:
-    status, done = downloader.next_chunk()
-    print "Download %d%%." % int(status.progress() * 100)
+from apiclient import discovery
+from httplib2 import Http
+from oauth2client import file, client, tools
+
+SCOPES = 'https://www.googleapis.com/auth/drive.readonly.metadata'
+store = file.Storage('storage.json')
+creds = store.get()
+if not creds or creds.invalid:
+    flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+    creds = tools.run_flow(flow, store)
+DRIVE = discovery.build('drive', 'v3', http=creds.authorize(Http()))
+
+files = DRIVE.files().list().execute().get('files', [])
+for f in files:
+    print(f['name'], f['mimeType'])
