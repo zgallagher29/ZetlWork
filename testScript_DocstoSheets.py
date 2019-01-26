@@ -18,11 +18,6 @@ files = DRIVE.files().list().execute().get('files', [])
 
 print(files[1]['id'])
 file_id = files[1]['id']
-request = DRIVE.files().export_media(fileId=file_id,
-                                             mimeType='application/pdf')
-fh = io.BytesIO()
-downloader = MediaIoBaseDownload(fh, request)
-done = False
-while done is False:
-    status, done = downloader.next_chunk()
-    
+
+
+# ideas: read the file into dataframe and then maybe match some rows with common words and put them into note card?
